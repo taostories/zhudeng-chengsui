@@ -50,11 +50,11 @@ window.CraftInteractions = (() => {
    if(!e.isPrimary||e.button!==0||dragging)return;
    const {el,length,t}=locate(),p=el.getPointAtLength(length*t),screen=new DOMPoint(p.x,p.y).matrixTransform(el.getScreenCTM());
    if(Math.hypot(e.clientX-screen.x,e.clientY-screen.y)>26)return;
-   e.preventDefault();dragging={id:e.pointerId,x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false,tap:!!e.target.closest('[data-point]')};surface.setPointerCapture(e.pointerId);
+   e.preventDefault();dragging={id:e.pointerId,x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false,slop:e.pointerType==='touch'?10:5,tap:!!e.target.closest('[data-point]')};surface.setPointerCapture(e.pointerId);
   };
   surface.onpointermove=e=>{
    const g=dragging;if(!g||g.id!==e.pointerId)return;
-   g.moved ||= Math.hypot(e.clientX-g.startX,e.clientY-g.startY)>5;
+   g.moved ||= Math.hypot(e.clientX-g.startX,e.clientY-g.startY)>g.slop;
    const current=locate(),matrix=current.el.getScreenCTM(),inverse=matrix.inverse(),p=new DOMPoint(e.clientX,e.clientY).matrixTransform(inverse),last=new DOMPoint(g.x,g.y).matrixTransform(inverse);
    const start=current.t*current.length,travel=Math.hypot(p.x-last.x,p.y-last.y),end=Math.min(current.length,start+Math.min(current.length*.18,Math.max(12,travel*1.8)));
    g.x=e.clientX;g.y=e.clientY;
@@ -70,7 +70,9 @@ window.CraftInteractions = (() => {
    if(distance>tolerance){say('回到亮处，接着慢慢来。');return;}
    if(best<=start+1e-5)return;
    say('');const endpoint=current.el.getPointAtLength(current.length);
-   const finished=best>=current.length-.6&&Math.hypot(p.x-endpoint.x,p.y-endpoint.y)<1.5;
+   // Finish in screen pixels so a finger need not hit a subpixel SVG endpoint.
+   const scale=Math.hypot(matrix.a,matrix.b),endRadius=12/scale;
+   const finished=best>=current.length*.85&&Math.hypot(p.x-endpoint.x,p.y-endpoint.y)<=endRadius;
    if(finished){release();advance(Math.min(max,(current.i+1)*unit));}
    else advance(current.i*unit+best/current.length*unit);
   };
