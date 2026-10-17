@@ -1,33 +1,41 @@
-/* Two licensed tracks, one forward transition per page session. No audio fetch on the cover. */
+/* Stream MP3s instead of waiting for the entire file to decode. One forward song change. */
 window.StoryMusic=(()=>{
  const urls=['assets/music/guzheng-city.mp3','assets/music/ripples.mp3'];
- const buffers=new Map(),pending=new Map(),voices=new Set();
- let context,started=false,enabled=true,phase=0,active=null,revision=0;
- function status(){document.querySelector('#sound').textContent=`声音 ${enabled?'开':'关'}`;document.querySelector('#sound').setAttribute('aria-pressed',String(enabled));document.querySelector('#sound').setAttribute('aria-label',enabled?'关闭音乐和音效':'开启音乐和音效');}
+ const tracks=new Map();let context,started=false,enabled=true,phase=0,active=null,revision=0;
+ function status(state){const button=document.querySelector('#sound');button.textContent=state==='loading'?'音乐加载中':state==='retry'?'音乐重试':`音乐 ${enabled?'开':'关'}`;button.setAttribute('aria-pressed',String(enabled));button.setAttribute('aria-label',state==='retry'?'重试播放背景音乐':enabled?'关闭背景音乐和音效':'开启背景音乐和音效');}
  function ctx(){return context ||= new (window.AudioContext||window.webkitAudioContext)();}
- async function buffer(index){
-  if(buffers.has(index))return buffers.get(index);
-  if(!pending.has(index))pending.set(index,(async()=>{const r=await fetch(urls[index]);if(!r.ok)throw Error('Music unavailable');const b=await ctx().decodeAudioData(await r.arrayBuffer());buffers.set(index,b);return b;})().finally(()=>pending.delete(index)));
-  return pending.get(index);
+ function track(index){
+  if(tracks.has(index))return tracks.get(index);
+  const media=new Audio();media.preload='none';media.loop=true;media.src=urls[index];
+  const gain=ctx().createGain();gain.gain.value=0;ctx().createMediaElementSource(media).connect(gain);gain.connect(context.destination);
+  const item={media,gain,index,timer:null};tracks.set(index,item);
+  media.addEventListener('waiting',()=>{if(enabled&&index===phase)status('loading');});
+  media.addEventListener('playing',()=>{if(enabled&&index===phase)status();});
+  return item;
  }
- function stop(voice,fade=0){if(!voice||voice.stopping)return;voice.stopping=true;const now=context.currentTime;voice.gain.gain.cancelScheduledValues(now);voice.gain.gain.setValueAtTime(voice.gain.gain.value,now);voice.gain.gain.linearRampToValueAtTime(0,now+fade);voice.source.stop(now+fade+.02);}
- async function play(){
+ function fade(item,volume,seconds){if(!item)return;const now=context.currentTime;item.gain.gain.cancelScheduledValues(now);item.gain.gain.setValueAtTime(item.gain.gain.value,now);item.gain.gain.linearRampToValueAtTime(volume,now+seconds);}
+ function fail(ticket){if(ticket!==revision)return;setEnabled(false);status('retry');document.dispatchEvent(new Event('music-unavailable'));}
+ function play(){
   if(!started||!enabled||document.hidden)return;
-  const ticket=++revision,index=phase;
+  const ticket=++revision;
   try{
-   await ctx().resume();const data=await buffer(index);
-   if(ticket!==revision||!enabled||document.hidden)return;
-   if(active?.index===index&&!active.stopping)return;
-   const source=context.createBufferSource(),gain=context.createGain();source.buffer=data;source.loop=true;source.connect(gain);gain.connect(context.destination);
-   const voice={source,gain,index,stopping:false};voices.add(voice);
-   source.onended=()=>{source.disconnect();gain.disconnect();voices.delete(voice);};
-   gain.gain.setValueAtTime(0,context.currentTime);gain.gain.linearRampToValueAtTime(.19,context.currentTime+2.5);source.start();stop(active,2.5);active=voice;
-  }catch{if(ticket===revision){setEnabled(false);document.dispatchEvent(new Event('music-unavailable'));}}
+   const item=track(phase);clearTimeout(item.timer);
+   if(item.media.error)item.media.load();
+   if(active===item&&!item.media.paused){ctx().resume().catch(()=>fail(ticket));return;}
+   status('loading');
+   // Invoke synchronously in the click handler for mobile autoplay policies.
+   const resumed=ctx().resume(),playing=item.media.play();
+   Promise.all([resumed,playing]).then(()=>{
+    if(ticket!==revision||!enabled||document.hidden)return;
+    const previous=active;active=item;fade(item,.42,1.8);status();
+    if(previous&&previous!==item){fade(previous,0,2.5);previous.timer=setTimeout(()=>{previous.media.pause();},2600);}
+   }).catch(()=>fail(ticket));
+  }catch{fail(ticket);}
  }
  function begin(){started=true;if(enabled)play();}
- function chapter(value){const next=value>=3?1:0;if(next>phase){phase=next;if(started&&enabled)play();}else if(started&&enabled&&value===2)buffer(1).catch(()=>{});}
- function setEnabled(value){enabled=value;status();if(enabled&&started)play();else if(!enabled){revision++;for(const voice of voices)stop(voice);active=null;}}
- document.addEventListener('visibilitychange',()=>{if(!context)return;if(document.hidden){context.suspend().catch(()=>{});}else if(started&&enabled){context.resume().then(play).catch(()=>{});}});
+ function chapter(value){if(value>=3&&phase===0){phase=1;if(started&&enabled)play();}}
+ function setEnabled(value){enabled=value;status();if(enabled&&started)play();else if(!enabled){revision++;for(const item of tracks.values()){clearTimeout(item.timer);item.media.pause();fade(item,0,0);}}}
+ document.addEventListener('visibilitychange',()=>{if(!context)return;if(document.hidden){revision++;for(const item of tracks.values())item.media.pause();context.suspend().catch(()=>{});}else if(started&&enabled)play();});
  const credits=document.querySelector('#music-credits');
  document.querySelector('#music-credit-button').onclick=()=>credits.showModal();
  document.querySelector('#close-music-credits').onclick=()=>credits.close();

@@ -38,4 +38,4 @@ Licensed under Creative Commons: By Attribution 4.0，https://creativecommons.or
 - Ripples 来源：https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100691
 - 修改：压缩至 96 kbps MP3、32 kHz 立体声，调整响度和首尾淡化；游戏内循环播放并在卷四交叉淡入。
 
-上述两首音乐单独适用 CC BY 4.0，前述作品再利用说明不限制该音乐许可授予的权利。首屏不请求音频，点击“从头读起”后播放；“声音”按钮控制音乐和音效。本页面会话只在卷四向第二首切换一次，回菜单或重读早期章节不倒换歌曲。
+上述两首音乐单独适用 CC BY 4.0，前述作品再利用说明不限制该音乐许可授予的权利。首屏不请求音频，点击“从头读起”后渐进播放，无需下载完整音频；“音乐”按钮控制音乐和音效，显示加载状态并支持失败重试。本页面会话只在卷四向第二首切换一次，回菜单或重读早期章节不倒换歌曲。
