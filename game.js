@@ -15,7 +15,7 @@
  function goNext(){if(mode!=='story')return;if(lampTalk){lampTalk.line++;if(lampTalk.line>1){if(!state.visited.includes(lampTalk.id))state.visited.push(lampTalk.id);lampTalk=null;save();render();}else{const l=LAMPS[lampTalk.id];$('.dialogue .speaker').textContent='祖父';$('.dialogue p').textContent=l.grandpa;$('.dialogue .next').innerHTML='继续赏灯 <span aria-hidden="true">→</span>';}return;}if(node().type==='action'&&!isDone(node().kind))return;state.index=Math.min(STORY.length-1,state.index+1);state.maxChapter=Math.max(state.maxChapter,node().chapter);selected=false;state.pan=0;save();chime(440);render();}
  function isDone(kind){if(CraftInteractions.kinds.includes(kind))return CraftInteractions.done(kind,state);return kind==='village'?state.villageDragged&&state.fireLit:kind==='bend'?state.bones>=3:kind==='bind'?state.knots.length===4:kind==='cloth'?state.cloth:kind==='paint'?!!state.pattern:kind==='festival'?state.visited.length===4:kind==='pass'?state.passed:false;}
  function storyText(text){const pattern=state.pattern||'兰草';return text.replaceAll('{所绘心愿}',PATTERNS[pattern].line).replaceAll('{纹样}',pattern);}
- function passLamp(){return `<div class="craft-stage active pass-stage${state.passed?' is-received':''}"><div class="craft-board"><img class="receiving-child" src="assets/characters/ahe.png" alt="阿禾在右侧等着接灯" draggable="false">${state.passed?`<div class="received-lamp">${lanternSVG('craft',4,state.pattern||'兰草')}</div>`:`<button class="material pass-material" aria-label="把竹灯向右滑，递给阿禾，也可点击选中">${lanternSVG('craft',4,state.pattern||'兰草')}</button><button class="drop-zone pass-target" aria-label="把灯交到阿禾手中"></button><span class="pass-direction" aria-hidden="true">→</span>`}</div></div>`;}
+ function passLamp(){return `<div class="craft-stage active pass-stage${state.passed?' is-received':''}"><div class="craft-board"><img class="receiving-child" src="assets/optimized/characters/ahe.webp" alt="阿禾在右侧等着接灯" draggable="false">${state.passed?`<div class="received-lamp">${lanternSVG('craft',4,state.pattern||'兰草')}</div>`:`<button class="material pass-material" aria-label="把竹灯向右滑，递给阿禾，也可点击选中">${lanternSVG('craft',4,state.pattern||'兰草')}</button><button class="drop-zone pass-target" aria-label="把灯交到阿禾手中"></button><span class="pass-direction" aria-hidden="true">→</span>`}</div></div>`;}
  function progress(){const list=['立骨','固形','蒙布','绘纹'];let k=state.pattern?4:state.cloth?3:state.knots.length===4?2:state.bones===3?1:0;return `<div class="progress-steps">${list.map((l,i)=>`<span class="${i<k?'done':i===k?'current':''}">${i<k?'· ':''}${l}</span>`).join('')}</div>`;}
  const motif=LanternPainting.motif;
  function lanternSVG(type='craft',stage=4,pattern=state.pattern){
@@ -29,7 +29,7 @@
  const heading=narrative?'':`<div class="dialogue-top"><span class="speaker">${who}</span></div>`;
  const person=who==='祖父'?'grandfather':who==='我'?(node().chapter<3?'childhood':'adult'):who==='阿禾'?'ahe':null;
  const side=node().portraitSide||(person==='adult'||(person==='grandfather'&&node().chapter<3)?'left':'right');
- const portrait=!narrative&&!lampTalk&&person?`<img class="speaker-portrait portrait-${side}${person==='grandfather'&&node().chapter===3?' portrait-mirrored':''}" data-person="${person}" src="assets/characters/${person}.png" alt="" aria-hidden="true" draggable="false">`:'';
+ const portrait=!narrative&&!lampTalk&&person?`<img class="speaker-portrait portrait-${side}${person==='grandfather'&&node().chapter===3?' portrait-mirrored':''}" data-person="${person}" src="assets/optimized/characters/${person}.webp" alt="" aria-hidden="true" draggable="false">`:'';
  return `<section class="dialogue${narrative?' narration':''}" aria-label="${narrative?'剧情文字':'剧情对话'}">${portrait}<div class="dialogue-panel">${heading}<p aria-live="polite">${text}</p><div class="dialogue-actions"><button class="prev" ${canPrev?'':'disabled'}>上一句</button><button class="next">${next} <span aria-hidden="true">→</span></button></div></div></section>`;
  }
 
@@ -42,18 +42,18 @@
  return `<div class="craft-stage ${active?'active':''}"><div class="craft-board"><div class="craft-lantern">${lanternSVG('craft',stage)}${k==='bind'?controls:''}</div>${k==='bind'?'':controls}<div class="craft-status">${active?(k==='bend'?`${state.bones} / 3`:k==='bind'?`${state.knots.length} / 4`:k==='cloth'?'棉布覆灯':'花草寄愿'):''}</div>${active&&k!=='paint'?progress():''}</div></div>`;
  }
  function setupLamps(){panorama.querySelectorAll('.festival-lamp').forEach(e=>e.remove());const types=['round','square','butterfly','rose'];LAMPS.forEach((l,i)=>{const b=document.createElement('button');b.className='festival-lamp'+(state.visited.includes(i)?' seen':'');b.style.left=[12,36,61,86][i]+'%';b.style.animationDelay=-i+'s';b.dataset.label=l.name+(state.visited.includes(i)?' · 已赏':'');b.setAttribute('aria-label',l.name);b.innerHTML=lanternSVG(types[i],4,'');b.disabled=!!lampTalk||mode!=='story'||node().kind!=='festival';b.onclick=()=>{lampTalk={id:i,line:0};chime(660);render();};panorama.append(b);});}
- function render(){disposeWork?.();disposeWork=null;
+ function render(){disposeWork?.();disposeWork=null;StoryImages.warm(mode,state.index);
  if(mode!=='story'||node().kind!=='village')fireworks.reset();
  document.body.classList.toggle('lamp-detail',mode==='story'&&!!lampTalk);
  document.body.dataset.mode=mode;$('#chapters-button').disabled=false;$('#chapters-button').hidden=!entered||!state.completed;
  if(mode==='cover'){
   setScene('cover');$('#chapter-label').textContent='';
   const resume=entered&&hasSave&&(state.index>0||state.completed);
-  app.innerHTML=`<section class="cover"><h1 class="calligraphy-title"><img src="assets/title-calligraphy.png" alt="竹灯承岁" draggable="false"></h1><p>一灯承岁，灯火相传。</p><div class="cover-actions"><button id="begin" class="primary">${resume?'续上灯火':'从头读起'} <span aria-hidden="true">→</span></button></div></section>`;
+  app.innerHTML=`<section class="cover"><h1 class="calligraphy-title"><img src="assets/optimized/title-calligraphy.webp" alt="竹灯承岁" draggable="false"></h1><p>一灯承岁，灯火相传。</p><div class="cover-actions"><button id="begin" class="primary">${resume?'续上灯火':'从头读起'} <span aria-hidden="true">→</span></button></div></section>`;
   $('#begin').onclick=()=>{if(!entered){state=fresh();entered=true;lampTalk=null;selected=false;}else if(state.completed){openChapters();return;}mode='story';save();render();chime();};return;
  }
  const n=node();$('#chapter-label').textContent=`卷${numerals[n.chapter]} · ${CHAPTERS[n.chapter]}`;setScene(n.type==='ending'?'cover':n.scene||['village','workshop','festival','legacy'][n.chapter]);
- if(n.type==='ending'){app.innerHTML=`<section class="end-screen"><div class="end-lamp">${lanternSVG('craft',4,state.pattern||'兰草')}</div><h1 class="calligraphy-title"><img src="assets/title-calligraphy.png" alt="竹灯承岁" draggable="false"></h1><p>${PATTERNS[state.pattern||'兰草'].wish}。<br>这一盏送出了门，下一盏等着一起做。</p><button class="primary" id="return-home">合卷 · 留灯</button></section>`;$('#return-home').onclick=()=>{mode='cover';render();};return;}
+ if(n.type==='ending'){app.innerHTML=`<section class="end-screen"><div class="end-lamp">${lanternSVG('craft',4,state.pattern||'兰草')}</div><h1 class="calligraphy-title"><img src="assets/optimized/title-calligraphy.webp" alt="竹灯承岁" draggable="false"></h1><p>${PATTERNS[state.pattern||'兰草'].wish}。<br>这一盏送出了门，下一盏等着一起做。</p><button class="primary" id="return-home">合卷 · 留灯</button></section>`;$('#return-home').onclick=()=>{mode='cover';render();};return;}
  const active=n.type==='action';let content=n.time?`<section class="time-caption" aria-label="故事时间"><h2>${n.time.title}</h2><p>${n.time.detail}</p></section>`:'';
  if(active&&CraftInteractions.kinds.includes(n.kind))content+=CraftInteractions.html(n.kind,state,{motif});else if(n.chapter===1&&!n.time&&n.showCraft!==false)content+=craft(active);
  if(n.kind==='pass')content+=passLamp();

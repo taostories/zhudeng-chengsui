@@ -1,11 +1,11 @@
 /* Brush strokes and the reveal mask share the SVG's coordinate system. */
 window.LanternPainting=(()=>{
  const names={'梅花':'pattern-plum','兰草':'pattern-orchid','竹叶':'pattern-bamboo'};
- const source=p=>'assets/minigames/'+names[p||'兰草']+'.png';
+ const source=p=>'assets/optimized/minigames/'+names[p||'兰草']+'.webp';
  const motif=p=>`<image href="${source(p)}" x="65" y="93" width="100" height="140" opacity="0.85"/>`;
  const stroke=points=>points.length===1?`<circle cx="${points[0][0]}" cy="${points[0][1]}" r="10" fill="white"/>`:`<path d="M${points.map(p=>p.join(' ')).join('L')}" fill="none" stroke="white" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>`;
  function drawing(s){const art=`<g transform="translate(85 -3)">${motif(s.pattern)}</g>`;if(s.craft.ink>=5)return art;return `<defs><mask id="paint-reveal" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="300"><g id="paint-strokes">${s.craft.paintStrokes.map(stroke).join('')}</g></mask></defs><g opacity=".12">${art}</g><g mask="url(#paint-reveal)">${art}</g>`;}
- const overlay=()=>'<button class="craft-point paint-step" aria-label="涂绘下一处纹样，也可按住灯面涂抹">·</button><img class="paint-brush" src="assets/minigames/brush.png" alt="" aria-hidden="true" draggable="false">';
+ const overlay=()=>'<button class="craft-point paint-step" aria-label="涂绘下一处纹样，也可按住灯面涂抹">·</button><img class="paint-brush" src="assets/optimized/minigames/brush.webp" alt="" aria-hidden="true" draggable="false">';
  function mount({state:s,save,render,chime}){
   const surface=document.querySelector('.work-surface'),svg=surface.querySelector('svg'),layer=surface.querySelector('#paint-strokes'),marker=surface.querySelector('.paint-step'),brush=surface.querySelector('.paint-brush');
   const c=s.craft,canvas=document.createElement('canvas');canvas.width=400;canvas.height=300;const ctx=canvas.getContext('2d',{willReadFrequently:true});

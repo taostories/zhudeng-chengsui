@@ -7,7 +7,7 @@ window.CraftInteractions = (() => {
  const ribPaths=MinigameArt.ribs;
  const clothPaths=MinigameArt.creases;
  const tools=['竹篾','细铁丝','棉布','画笔'];
- function icon(i){return `<image href="assets/minigames/${['bamboo-bundle','wire-coil','cotton-cloth','brush'][i]}.png" x="5" y="4" width="90" height="72"/>`;}
+ function icon(i){return `<image href="assets/optimized/minigames/${['bamboo-bundle','wire-coil','cotton-cloth','brush'][i]}.webp" x="5" y="4" width="90" height="72"/>`;}
  const svg=(body)=>`<svg viewBox="0 0 400 300" class="work-svg" aria-hidden="true">${body}</svg>`;
  const path=(pts)=>{if(!pts.length)return '';let d='M'+pts[0].join(' ');for(let i=1;i<pts.length;i++){const a=pts[i-2]||pts[i-1],b=pts[i-1],c=pts[i],e=pts[i+1]||c;d+='C'+[b[0]+(c[0]-a[0])/6,b[1]+(c[1]-a[1])/6,c[0]-(e[0]-b[0])/6,c[1]-(e[1]-b[1])/6,...c].join(' ');}return d;};
  const hand=(x,y,flip=1)=>`<g transform="translate(${x} ${y}) scale(${flip} 1)" fill="none" stroke="#dcc69f" stroke-width="4" stroke-linecap="round"><path d="M-42 22L-20 1q7-9 18-2l18 12q6 6-2 8l-21-9M-25 30q20-10 43-7"/></g>`;

@@ -14,7 +14,7 @@ window.EndingGestures = (() => {
    body=art.frame(s,true)+art.creases(c.repairedSmooth,true)+`<g transform="translate(85 -3)">${art.motif(s.pattern||'兰草')}</g>`+`<path d="M150 158H250m-12-9l12 9l-12 9" fill="none" stroke="#f5dfaf88" stroke-width="2"/>`;
    target=[150+100*c.repairedSmooth/8,158];
   }else if(k==='teach'){
-   body=`<path d="${art.path(arc)}" fill="none" stroke="#d5c18e66" stroke-width="3" stroke-dasharray="4 7"/><path class="swipe-bamboo${c.taught?' bamboo-completed':''}" d="${art.path(arc)}" fill="none" stroke="#ebc784" stroke-width="7" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${1-(c.taught?1:c.lesson/8)}"/><image class="child-hand" href="assets/minigames/ahe-hands-soft.png" x="${c.taught?243:265}" y="${c.taught?212:206}" width="95" height="88"/>`;
+   body=`<path d="${art.path(arc)}" fill="none" stroke="#d5c18e66" stroke-width="3" stroke-dasharray="4 7"/><path class="swipe-bamboo${c.taught?' bamboo-completed':''}" d="${art.path(arc)}" fill="none" stroke="#ebc784" stroke-width="7" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${1-(c.taught?1:c.lesson/8)}"/><image class="child-hand" href="assets/optimized/minigames/ahe-hands-soft.webp" x="${c.taught?243:265}" y="${c.taught?212:206}" width="95" height="88"/>`;
    target=arc[0];hint='沿弧线滑动，最后松手让阿禾接住';
   }else{
    body=`<g class="swipe-lamp ${p==='lift'?'':'is-steady'}">${art.frame(s,true,'',p==='done')+(p==='lift'?art.creases(0,true):'')+`<g transform="translate(85 -3)">${art.motif(s.pattern||'兰草')}</g>`}</g>${p!=='done'?'<path d="M200 66V12m-9 12l9-12l9 12" fill="none" stroke="#f0d39a" stroke-width="2"/>':''}`;
