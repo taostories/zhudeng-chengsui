@@ -107,3 +107,9 @@ body[data-mode=cover] #chapters-button{display:none}
 @media(max-width:700px){.pass-stage .craft-board{width:min(100%,calc((100dvh - 305px)*1.333333))}.pass-stage .pass-target{font-size:14px;letter-spacing:0}.pass-direction{font-size:26px}}
 @media(max-height:580px) and (min-width:701px){.pass-stage .craft-board{width:min(100%,calc((100dvh - 200px)*1.333333))}}
 @media(prefers-reduced-motion:reduce){.pass-stage .received-lamp{animation:none}}
+
+#music-credit-button{display:none;position:fixed;bottom:max(12px,env(safe-area-inset-bottom));right:18px;z-index:12;background:none;border:0;color:#dac99d;font-size:13px;opacity:.8;padding:6px}
+body[data-mode=cover] #music-credit-button{display:block}
+#music-credits{max-width:min(520px,90vw);max-height:82dvh;overflow:auto;background:#142f2c;color:#ead9b6;border:1px solid #b49a6b;border-radius:12px;padding:24px}
+#music-credits::backdrop{background:#031b22b3}
+#music-credits p{font-size:15px;line-height:1.8}#music-credits a{color:#edd29b}

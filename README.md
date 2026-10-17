@@ -28,3 +28,14 @@ python -m http.server 5188
 剧情与美术方向由创作者提出并持续修订；Codex 辅助代码实现、剧情润色、图片裁切去底及验证。插画、人物、工具和书法标题由创作者使用图片生成工具制作并提供。人物与家庭经历属于虚构叙事。
 
 公开仓库供作品展示，不代表授予图片或作品的再利用许可。
+
+## 背景音乐
+
+“Guzheng City” 和 “Ripples” — Kevin MacLeod (incompetech.com)。
+Licensed under Creative Commons: By Attribution 4.0，https://creativecommons.org/licenses/by/4.0/ 。
+
+- Guzheng City 来源：https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2100001
+- Ripples 来源：https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100691
+- 修改：压缩至 96 kbps MP3、32 kHz 立体声，调整响度和首尾淡化；游戏内循环播放并在卷四交叉淡入。
+
+上述两首音乐单独适用 CC BY 4.0，前述作品再利用说明不限制该音乐许可授予的权利。首屏不请求音频，点击“从头读起”后播放；“声音”按钮控制音乐和音效。本页面会话只在卷四向第二首切换一次，回菜单或重读早期章节不倒换歌曲。
